@@ -1,0 +1,44 @@
+<%
+  const now = new Date();
+  const state = (c) =>
+    !c.isActive ? ['secondary', 'Đã tắt']
+    : (c.endsAt && now > c.endsAt) ? ['danger', 'Hết hạn']
+    : (c.startsAt && now < c.startsAt) ? ['warning text-dark', 'Chưa bắt đầu']
+    : (c.usageLimitTotal != null && c.usedCount >= c.usageLimitTotal) ? ['dark', 'Hết lượt']
+    : ['success', 'Đang chạy'];
+  const day = (d) => (d ? d.toLocaleDateString('vi-VN') : '...');
+%>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Mã giảm giá</h3>
+  <a class="btn btn-primary" href="/admin/coupons/new">+ Thêm mã</a>
+</div>
+
+<div class="table-responsive bg-white">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light">
+      <tr><th>Mã</th><th>Giảm</th><th>Đơn tối thiểu</th><th>Lượt dùng</th><th>Hiệu lực</th><th>Trạng thái</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% if (!coupons.length) { %><tr><td colspan="7" class="text-center text-muted py-4">Chưa có mã giảm giá.</td></tr><% } %>
+      <% coupons.forEach(function (c) { const st = state(c); %>
+        <tr>
+          <td><strong><%= c.code %></strong></td>
+          <td>
+            <% if (c.discountType === 'percent') { %>
+              <%= c.discountValue %>%<% if (c.maxDiscountAmount) { %> <small class="text-muted">(tối đa <%= vnd(c.maxDiscountAmount) %>)</small><% } %>
+            <% } else { %><%= vnd(c.discountValue) %><% } %>
+          </td>
+          <td><%= vnd(c.minOrderAmount) %></td>
+          <td><%= c.usedCount %> / <%= c.usageLimitTotal != null ? c.usageLimitTotal : '∞' %><br><small class="text-muted"><%= c.usageLimitPerUser %> lượt/người</small></td>
+          <td><small><%= day(c.startsAt) %> &rarr; <%= day(c.endsAt) %></small></td>
+          <td><span class="badge bg-<%= st[0] %>"><%= st[1] %></span></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="/admin/coupons/<%= c._id %>/edit">Sửa</a>
+            <button class="btn btn-sm btn-outline-danger" data-delete-url="/api/admin/coupons/<%= c._id %>" data-name="<%= c.code %>">Xóa</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<script src="/js/admin-delete.js" defer></script>

@@ -1,0 +1,30 @@
+<h3 class="mb-4">Tổng quan</h3>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted small">Doanh thu (đã thanh toán)</div>
+    <div class="fs-4 fw-bold text-success"><%= vnd(revenue) %></div>
+  </div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted small">Tổng đơn hàng</div>
+    <div class="fs-4 fw-bold"><%= totalOrders %></div>
+  </div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted small">Số đầu sách</div>
+    <div class="fs-4 fw-bold"><%= bookCount %></div>
+  </div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">
+    <div class="text-muted small">Khách hàng</div>
+    <div class="fs-4 fw-bold"><%= userCount %></div>
+  </div></div></div>
+</div>
+
+<h5>Đơn hàng theo trạng thái</h5>
+<div class="d-flex flex-wrap gap-2">
+  <% Object.keys(byStatus).forEach(function (s) { %>
+    <a class="btn btn-outline-secondary" href="/admin/orders?status=<%= s %>">
+      <span class="badge bg-<%= orderStatusColor[s] %>"><%= orderStatusLabel[s] %></span>
+      <strong class="ms-1"><%= byStatus[s] %></strong>
+    </a>
+  <% }) %>
+</div>

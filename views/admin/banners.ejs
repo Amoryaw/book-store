@@ -1,0 +1,27 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Banner trang chủ</h3>
+  <a class="btn btn-primary" href="/admin/banners/new">+ Thêm banner</a>
+</div>
+
+<div class="table-responsive bg-white">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light"><tr><th>Ảnh</th><th>Tiêu đề</th><th>Link</th><th>Thứ tự</th><th>Hiển thị</th><th></th></tr></thead>
+    <tbody>
+      <% if (!banners.length) { %><tr><td colspan="6" class="text-center text-muted py-4">Chưa có banner.</td></tr><% } %>
+      <% banners.forEach(function (b) { %>
+        <tr>
+          <td><img src="<%= b.image %>" alt="" style="width:140px;height:60px;object-fit:cover" class="rounded"></td>
+          <td><%= b.title %></td>
+          <td><small><%= b.link || '—' %></small></td>
+          <td><%= b.sortOrder %></td>
+          <td><span class="badge bg-<%= b.isActive ? 'success' : 'secondary' %>"><%= b.isActive ? 'Đang hiện' : 'Đã ẩn' %></span></td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="/admin/banners/<%= b._id %>/edit">Sửa</a>
+            <button class="btn btn-sm btn-outline-danger" data-delete-url="/api/admin/banners/<%= b._id %>" data-name="<%= b.title %>">Xóa</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<script src="/js/admin-delete.js" defer></script>

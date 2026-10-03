@@ -1,0 +1,58 @@
+<h3 class="mb-3">Quản lý đơn hàng <small class="text-muted fs-6">(<%= total %> đơn)</small></h3>
+
+<form class="row g-2 mb-3" method="get" action="/admin/orders">
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">Tất cả trạng thái</option>
+      <% Object.keys(orderStatusLabel).forEach(function (s) { %>
+        <option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= orderStatusLabel[s] %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-5">
+    <input name="q" value="<%= q %>" class="form-control" placeholder="Mã đơn, tên hoặc số điện thoại người nhận">
+  </div>
+  <div class="col-md-2"><button class="btn btn-primary w-100">Lọc</button></div>
+</form>
+
+<div class="table-responsive bg-white">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Mã đơn</th><th>Người nhận</th><th>Ngày đặt</th><th>Tổng tiền</th>
+        <th>Thanh toán</th><th>Trạng thái</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!orders.length) { %>
+        <tr><td colspan="7" class="text-center text-muted py-4">Không có đơn hàng nào.</td></tr>
+      <% } %>
+      <% orders.forEach(function (o) { %>
+        <tr>
+          <td><strong><%= o.orderCode %></strong></td>
+          <td><%= o.receiverName %><br><small class="text-muted"><%= o.receiverPhone %></small></td>
+          <td><%= o.createdAt.toLocaleString('vi-VN') %></td>
+          <td><%= vnd(o.totalAmount) %></td>
+          <td>
+            <small><%= paymentMethodLabel[o.paymentMethod] %></small><br>
+            <span class="badge bg-<%= o.paymentStatus === 'paid' ? 'success' : 'secondary' %>"><%= paymentStatusLabel[o.paymentStatus] %></span>
+          </td>
+          <td><span class="badge bg-<%= orderStatusColor[o.status] %>"><%= orderStatusLabel[o.status] %></span></td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/admin/orders/<%= o.orderCode %>">Chi tiết</a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<% if (totalPages > 1) { %>
+  <nav class="mt-3">
+    <ul class="pagination">
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === page ? 'active' : '' %>">
+          <a class="page-link" href="/admin/orders?page=<%= i %>&status=<%= status %>&q=<%= encodeURIComponent(q) %>"><%= i %></a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+<% } %>

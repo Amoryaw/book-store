@@ -1,0 +1,40 @@
+<% if (locals.banners && banners.length) { %>
+<div id="homeBanner" class="carousel slide mb-4" data-bs-ride="carousel">
+  <div class="carousel-inner rounded-3">
+    <% banners.forEach(function (b, i) { %>
+      <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+        <% if (b.link) { %><a href="<%= b.link %>"><% } %>
+          <img src="<%= b.image %>" alt="<%= b.title %>" class="d-block w-100" style="max-height:360px;object-fit:cover">
+        <% if (b.link) { %></a><% } %>
+      </div>
+    <% }) %>
+  </div>
+  <% if (banners.length > 1) { %>
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeBanner" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+    <button class="carousel-control-next" type="button" data-bs-target="#homeBanner" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+  <% } %>
+</div>
+<% } %>
+
+<div class="p-4 mb-4 bg-light rounded-3">
+  <h1>Chào mừng đến Book Store</h1>
+  <p>Sách tiếng Việt và sách ngoại văn, giao hàng tận nơi.</p>
+  <a class="btn btn-primary me-2" href="/sach-tieng-viet">Sách Tiếng Việt</a>
+  <a class="btn btn-outline-primary" href="/english-books">English Books</a>
+</div>
+
+<% if (categories.length) { %>
+<section class="mb-5">
+  <h4>Danh mục sách</h4>
+  <div class="d-flex flex-wrap gap-2">
+    <% categories.forEach(function (c) { %>
+      <a class="btn btn-outline-secondary" href="/tim-kiem?category=<%= c.slug %>"><%= c.name %></a>
+    <% }) %>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/book-section', { heading: 'Sách nổi bật', books: featured, link: '/tim-kiem?sort=featured' }) %>
+<%- include('partials/book-section', { heading: 'Sách mới', books: newest, link: '/tim-kiem?sort=newest' }) %>
+<%- include('partials/book-section', { heading: 'Sách bán chạy', books: bestseller, link: '/tim-kiem?sort=bestseller' }) %>
+<%- include('partials/book-section', { heading: 'Sách khuyến mãi', books: onSale, link: '/tim-kiem?onSale=true' }) %>

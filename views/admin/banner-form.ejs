@@ -1,0 +1,30 @@
+<% const b = banner || {}; %>
+<a href="/admin/banners" class="text-decoration-none">&larr; Danh sách banner</a>
+<h3 class="my-3"><%= banner ? 'Sửa banner' : 'Thêm banner' %></h3>
+
+<form id="bannerForm" class="bg-white p-4 rounded" data-id="<%= banner ? banner._id : '' %>" style="max-width: 720px">
+  <div id="formError" class="alert alert-danger d-none"></div>
+  <div class="mb-3">
+    <label class="form-label">Tiêu đề *</label>
+    <input name="title" class="form-control" value="<%= b.title || '' %>" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Ảnh * <small class="text-muted">(tối đa 2MB, nên dùng ảnh ngang, ví dụ 1200x400)</small></label>
+    <% if (banner) { %><div class="mb-2"><img src="<%= b.image %>" alt="" style="max-width:100%;max-height:140px" class="rounded"><div class="small text-muted">Chọn ảnh mới nếu muốn thay.</div></div><% } %>
+    <input type="file" name="image" accept="image/*" class="form-control" <%= banner ? '' : 'required' %>>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Link khi bấm vào (tùy chọn)</label>
+    <input name="link" class="form-control" placeholder="/tim-kiem?onSale=true hoặc https://..." value="<%= b.link || '' %>">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Thứ tự hiển thị (nhỏ hiện trước)</label>
+    <input name="sortOrder" type="number" class="form-control" value="<%= b.sortOrder || 0 %>">
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" name="isActive" id="isActive" <%= (!banner || b.isActive) ? 'checked' : '' %>>
+    <label class="form-check-label" for="isActive">Hiển thị trên trang chủ</label>
+  </div>
+  <button class="btn btn-primary" type="submit">Lưu</button>
+</form>
+<script src="/js/admin-banner-form.js" defer></script>

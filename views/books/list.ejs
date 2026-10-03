@@ -1,0 +1,43 @@
+<h3 class="mb-3"><%= heading %></h3>
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <span>Sắp xếp:</span>
+  <% [['newest', 'Hàng mới'], ['name_asc', 'Tên A → Z'], ['name_desc', 'Tên Z → A'],
+      ['price_asc', 'Giá tăng dần'], ['price_desc', 'Giá giảm dần'], ['bestseller', 'Bán chạy']].forEach(function (s) { %>
+    <a class="btn btn-sm <%= sort === s[0] ? 'btn-primary' : 'btn-outline-secondary' %>"
+       href="<%= buildUrl({ sort: s[0], page: null }) %>"><%= s[1] %></a>
+  <% }) %>
+  <span class="ms-auto text-muted"><%= pagination.total %> sách</span>
+</div>
+
+<% if (books.length === 0) { %>
+  <div class="alert alert-info">Không tìm thấy sách phù hợp.</div>
+<% } else { %>
+  <div class="row row-cols-2 row-cols-md-4 g-3">
+    <% books.forEach(function (book) { %>
+      <%- include('../partials/book-card', { book: book }) %>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (pagination.totalPages > 1) { %>
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+      <a class="page-link" href="<%= buildUrl({ page: Math.max(pagination.page - 1, 1) }) %>">«</a>
+    </li>
+    <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+      <% if (p === 1 || p === pagination.totalPages || Math.abs(p - pagination.page) <= 2) { %>
+        <li class="page-item <%= p === pagination.page ? 'active' : '' %>">
+          <a class="page-link" href="<%= buildUrl({ page: p }) %>"><%= p %></a>
+        </li>
+      <% } else if (Math.abs(p - pagination.page) === 3) { %>
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      <% } %>
+    <% } %>
+    <li class="page-item <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>">
+      <a class="page-link" href="<%= buildUrl({ page: Math.min(pagination.page + 1, pagination.totalPages) }) %>">»</a>
+    </li>
+  </ul>
+</nav>
+<% } %>

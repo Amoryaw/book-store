@@ -1,0 +1,98 @@
+<%
+  const statusInfo = {
+    published: ['success', 'Đang bán'],
+    draft: ['secondary', 'Nháp'],
+    hidden: ['dark', 'Đã ẩn'],
+  };
+  // Giữ lại bộ lọc khi chuyển trang
+  const keep = {};
+  ['q', 'category', 'status', 'language'].forEach(function (k) { if (filters[k]) keep[k] = filters[k]; });
+  const pageLink = function (p) { return '/admin/books?' + new URLSearchParams(Object.assign({}, keep, { page: p })).toString(); };
+%>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Quản lý sách <small class="text-muted fs-6">(<%= pagination.total %> sách)</small></h3>
+  <a class="btn btn-primary" href="/admin/books/new">+ Thêm sách</a>
+</div>
+
+<form class="row g-2 mb-3" method="get" action="/admin/books">
+  <div class="col-md-4">
+    <input name="q" class="form-control" placeholder="Tìm theo tên sách hoặc tác giả" value="<%= filters.q %>">
+  </div>
+  <div class="col-md-3">
+    <select name="category" class="form-select">
+      <option value="">Tất cả danh mục</option>
+      <% categories.forEach(function (c) { %>
+        <option value="<%= c._id %>" <%= String(c._id) === filters.category ? 'selected' : '' %>><%= c.name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select name="status" class="form-select">
+      <option value="">Mọi trạng thái</option>
+      <% Object.keys(statusInfo).forEach(function (s) { %>
+        <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= statusInfo[s][1] %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select name="language" class="form-select">
+      <option value="">Mọi ngôn ngữ</option>
+      <option value="vi" <%= filters.language === 'vi' ? 'selected' : '' %>>Tiếng Việt</option>
+      <option value="en" <%= filters.language === 'en' ? 'selected' : '' %>>Tiếng Anh</option>
+    </select>
+  </div>
+  <div class="col-md-1 d-grid">
+    <button class="btn btn-outline-secondary" type="submit">Lọc</button>
+  </div>
+</form>
+
+<div class="table-responsive bg-white">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light">
+      <tr><th>Bìa</th><th>Sách</th><th>Danh mục</th><th>Giá</th><th>Tồn kho</th><th>Đã bán</th><th>Trạng thái</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% if (!books.length) { %><tr><td colspan="8" class="text-center text-muted py-4">Không có sách nào.</td></tr><% } %>
+      <% books.forEach(function (b) { const st = statusInfo[b.status] || ['secondary', b.status]; %>
+        <tr>
+          <td>
+            <% if (b.coverImage) { %>
+              <img src="<%= b.coverImage %>" alt="" style="width:50px;height:70px;object-fit:cover" class="rounded">
+            <% } else { %>
+              <div class="bg-light border rounded text-muted small d-flex align-items-center justify-content-center" style="width:50px;height:70px">Không ảnh</div>
+            <% } %>
+          </td>
+          <td>
+            <strong><%= b.title %></strong><% if (b.isFeatured) { %> <span class="badge bg-warning text-dark">Nổi bật</span><% } %><br>
+            <small class="text-muted"><%= b.author %> &middot; <%= b.language === 'en' ? 'Tiếng Anh' : 'Tiếng Việt' %></small>
+          </td>
+          <td><%= b.category ? b.category.name : '—' %></td>
+          <td>
+            <%= vnd(b.price) %>
+            <% if (b.oldPrice && b.oldPrice > b.price) { %><br><small class="text-muted text-decoration-line-through"><%= vnd(b.oldPrice) %></small><% } %>
+          </td>
+          <td><span class="<%= b.stock === 0 ? 'text-danger fw-bold' : '' %>"><%= b.stock %></span></td>
+          <td><%= b.sold %></td>
+          <td><span class="badge bg-<%= st[0] %>"><%= st[1] %></span></td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-primary" href="/admin/books/<%= b._id %>/edit">Sửa</a>
+            <button class="btn btn-sm btn-outline-danger" data-delete-url="/api/books/<%= b._id %>" data-name="<%= b.title %>">Xóa</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<% if (pagination.totalPages > 1) { %>
+  <nav class="mt-3">
+    <ul class="pagination mb-0">
+      <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>"><a class="page-link" href="<%= pageLink(pagination.page - 1) %>">&laquo;</a></li>
+      <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+        <li class="page-item <%= p === pagination.page ? 'active' : '' %>"><a class="page-link" href="<%= pageLink(p) %>"><%= p %></a></li>
+      <% } %>
+      <li class="page-item <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>"><a class="page-link" href="<%= pageLink(pagination.page + 1) %>">&raquo;</a></li>
+    </ul>
+  </nav>
+<% } %>
+<script src="/js/admin-delete.js" defer></script>

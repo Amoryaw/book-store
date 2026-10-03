@@ -1,0 +1,57 @@
+<%
+  const c = coupon || {};
+  const d = (x) => (x ? `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}` : '');
+%>
+<a href="/admin/coupons" class="text-decoration-none">&larr; Danh sách mã</a>
+<h3 class="my-3"><%= coupon ? 'Sửa mã ' + coupon.code : 'Thêm mã giảm giá' %></h3>
+
+<form id="couponForm" class="bg-white p-4 rounded" data-id="<%= coupon ? coupon._id : '' %>" style="max-width: 720px">
+  <div id="formError" class="alert alert-danger d-none"></div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Mã *</label>
+      <input name="code" class="form-control text-uppercase" value="<%= c.code || '' %>" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Loại giảm *</label>
+      <select name="discountType" class="form-select">
+        <option value="percent" <%= c.discountType === 'percent' ? 'selected' : '' %>>Theo phần trăm (%)</option>
+        <option value="amount" <%= c.discountType === 'amount' ? 'selected' : '' %>>Số tiền cố định (₫)</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Giá trị giảm *</label>
+      <input name="discountValue" type="number" min="1" class="form-control" value="<%= c.discountValue != null ? c.discountValue : '' %>" required>
+    </div>
+    <div class="col-md-6" id="maxWrap">
+      <label class="form-label">Giảm tối đa (₫, chỉ với %)</label>
+      <input name="maxDiscountAmount" type="number" min="0" class="form-control" value="<%= c.maxDiscountAmount || '' %>">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Đơn tối thiểu (₫)</label>
+      <input name="minOrderAmount" type="number" min="0" class="form-control" value="<%= c.minOrderAmount || 0 %>">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Lượt dùng mỗi người *</label>
+      <input name="usageLimitPerUser" type="number" min="1" class="form-control" value="<%= c.usageLimitPerUser || 1 %>">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Tổng lượt dùng (để trống = không giới hạn)</label>
+      <input name="usageLimitTotal" type="number" min="0" class="form-control" value="<%= c.usageLimitTotal != null ? c.usageLimitTotal : '' %>">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Từ ngày</label>
+      <input name="startsAt" type="date" class="form-control" value="<%= d(c.startsAt) %>">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Đến hết ngày</label>
+      <input name="endsAt" type="date" class="form-control" value="<%= d(c.endsAt) %>">
+    </div>
+    <div class="col-12 form-check ms-2">
+      <input class="form-check-input" type="checkbox" name="isActive" id="isActive" <%= (!coupon || c.isActive) ? 'checked' : '' %>>
+      <label class="form-check-label" for="isActive">Kích hoạt</label>
+    </div>
+  </div>
+  <button class="btn btn-primary mt-4" type="submit">Lưu</button>
+</form>
+<script src="/js/admin-coupon-form.js" defer></script>

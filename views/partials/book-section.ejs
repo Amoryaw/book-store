@@ -1,0 +1,13 @@
+<% if (books && books.length) { %>
+<section class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><%= heading %></h4>
+    <% if (locals.link) { %><a href="<%= link %>">Xem tất cả</a><% } %>
+  </div>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+    <% books.forEach(function (book) { %>
+      <%- include('book-card', { book: book }) %>
+    <% }) %>
+  </div>
+</section>
+<% } %>

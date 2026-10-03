@@ -1,0 +1,66 @@
+<h3 class="mb-3">Giỏ hàng</h3>
+
+<% if (adjusted) { %>
+  <div class="alert alert-warning">Giỏ hàng vừa được cập nhật vì có sách hết hàng hoặc vượt quá tồn kho.</div>
+<% } %>
+
+<% if (!items.length) { %>
+  <div class="text-center py-5">
+    <p class="lead">Giỏ hàng của bạn đang trống.</p>
+    <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
+  </div>
+<% } else { %>
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <table class="table align-middle" id="cartTable">
+        <thead>
+          <tr><th>Sách</th><th style="width: 160px;">Số lượng</th><th class="text-end">Thành tiền</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% items.forEach(function (it) { %>
+            <tr data-book-id="<%= it.book._id %>" data-max="<%= it.book.stock %>">
+              <td>
+                <div class="d-flex gap-3 align-items-center">
+                  <% if (it.book.coverImage) { %>
+                    <img src="<%= it.book.coverImage %>" alt="" style="width: 56px; height: 75px; object-fit: cover;" class="rounded border">
+                  <% } %>
+                  <div>
+                    <a href="/sach/<%= it.book.slug %>" class="text-decoration-none fw-medium"><%= it.book.title %></a>
+                    <div class="small text-muted"><%= vnd(it.book.price) %> · còn <%= it.book.stock %></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="input-group input-group-sm">
+                  <button class="btn btn-outline-secondary js-minus" type="button">−</button>
+                  <input type="number" class="form-control text-center js-qty" value="<%= it.quantity %>" min="1" max="<%= it.book.stock %>">
+                  <button class="btn btn-outline-secondary js-plus" type="button">+</button>
+                </div>
+                <div class="text-danger small js-msg" style="min-height: 1.2em;"></div>
+              </td>
+              <td class="text-end price js-line"><%= vnd(it.lineTotal) %></td>
+              <td class="text-end"><button class="btn btn-sm btn-outline-danger js-remove" type="button">Xóa</button></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Tóm tắt đơn hàng</h5>
+          <div class="d-flex justify-content-between"><span>Tạm tính</span><span id="subtotal"><%= vnd(subtotal) %></span></div>
+          <div class="d-flex justify-content-between"><span>Phí vận chuyển</span><span id="shipping"><%= shippingFee ? vnd(shippingFee) : 'Miễn phí' %></span></div>
+          <div class="small text-muted">Miễn phí vận chuyển cho đơn từ <%= vnd(freeShipFrom) %>.</div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold fs-5"><span>Tổng cộng</span><span class="price" id="total"><%= vnd(subtotal + shippingFee) %></span></div>
+          <a href="/checkout" class="btn btn-primary w-100 mt-3">Tiến hành đặt hàng</a>
+          <div class="small text-muted mt-2">Mã giảm giá được nhập ở bước tiếp theo.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<script src="/js/cart.js" defer></script>

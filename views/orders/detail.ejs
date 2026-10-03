@@ -1,0 +1,77 @@
+<% if (justOrdered) { %>
+  <div class="alert alert-success">Đặt hàng thành công! Cảm ơn bạn đã mua sách tại Book Store.</div>
+<% } %>
+
+<% if (paidFlag && order.paymentStatus === 'paid') { %>
+  <div class="alert alert-success">Thanh toán thành công! Cảm ơn bạn đã mua sách tại Book Store.</div>
+<% } else if (paidFlag && order.status === 'pending' && order.paymentStatus === 'unpaid') { %>
+  <div class="alert alert-info">Đang chờ Stripe xác nhận thanh toán. Vui lòng tải lại trang sau ít phút.</div>
+<% } %>
+
+<% if (canceledFlag && order.paymentMethod === 'stripe' && order.paymentStatus === 'unpaid' && order.status === 'pending') { %>
+  <div class="alert alert-warning">Bạn chưa hoàn tất thanh toán. Đơn được giữ khoảng 30 phút, bạn có thể bấm "Thanh toán ngay" để trả tiếp.</div>
+<% } %>
+
+<% if (order.status === 'cancelled' && order.paymentMethod === 'stripe' && order.paymentStatus === 'unpaid') { %>
+  <div class="alert alert-secondary">Đơn đã bị hủy vì chưa được thanh toán trong thời hạn. Sách đã được trả lại kho.</div>
+<% } %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Đơn <%= order.orderCode %></h3>
+  <span class="badge bg-<%= orderStatusColor[order.status] %> fs-6"><%= orderStatusLabel[order.status] %></span>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <table class="table align-middle">
+      <thead><tr><th>Sách</th><th class="text-end">Đơn giá</th><th class="text-center">SL</th><th class="text-end">Thành tiền</th></tr></thead>
+      <tbody>
+        <% order.items.forEach(function (it) { %>
+          <tr>
+            <td><%= it.title %></td>
+            <td class="text-end"><%= vnd(it.price) %></td>
+            <td class="text-center"><%= it.quantity %></td>
+            <td class="text-end"><%= vnd(it.price * it.quantity) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6>Người nhận</h6>
+        <div><%= order.receiverName %></div>
+        <div><%= order.receiverPhone %></div>
+        <div class="text-muted"><%= order.receiverAddress %></div>
+        <hr>
+        <div class="small">Thanh toán: <%= paymentMethodLabel[order.paymentMethod] %> (<%= paymentStatusLabel[order.paymentStatus] %>)</div>
+        <% if (order.paidAt) { %>
+          <div class="small">Thanh toán lúc: <%= order.paidAt.toLocaleString('vi-VN') %></div>
+        <% } %>
+        <div class="small">Ngày đặt: <%= order.createdAt.toLocaleString('vi-VN') %></div>
+
+        <% if (order.paymentMethod === 'stripe' && order.paymentStatus === 'unpaid' && order.status === 'pending') { %>
+          <button id="payNowBtn" class="btn btn-primary btn-sm mt-3" data-code="<%= order.orderCode %>">Thanh toán ngay</button>
+          <div id="payError" class="text-danger small mt-2" style="min-height: 1.2em;"></div>
+        <% } %>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between"><span>Tạm tính</span><span><%= vnd(order.subtotal) %></span></div>
+        <div class="d-flex justify-content-between"><span>Phí vận chuyển</span><span><%= order.shippingFee ? vnd(order.shippingFee) : 'Miễn phí' %></span></div>
+        <% if (order.discountAmount > 0) { %>
+          <div class="d-flex justify-content-between text-success"><span>Giảm giá (<%= order.couponCode %>)</span><span>- <%= vnd(order.discountAmount) %></span></div>
+        <% } %>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5"><span>Tổng cộng</span><span class="price"><%= vnd(order.totalAmount) %></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="/orders" class="btn btn-link mt-3">← Quay lại đơn hàng của tôi</a>
+
+<script src="/js/order-detail.js" defer></script>

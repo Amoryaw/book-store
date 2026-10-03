@@ -1,0 +1,99 @@
+<%
+  const onSale = book.oldPrice && book.oldPrice > book.price;
+  const percent = onSale ? Math.round((1 - book.price / book.oldPrice) * 100) : 0;
+  const inStock = book.stock > 0;
+  const gallery = [book.coverImage].concat(book.images || []).filter(Boolean);
+  const langBase = book.language === 'vi' ? '/sach-viet-nam' : '/foreign-books';
+%>
+<nav class="small mb-3">
+  <a href="/">Trang chủ</a> /
+  <a href="<%= langBase %>"><%= book.language === 'vi' ? 'Sách Tiếng Việt' : 'English Books' %></a> /
+  <% if (book.category) { %><a href="<%= langBase %>/<%= book.category.slug %>"><%= book.language === 'en' && book.category.nameEn ? book.category.nameEn : book.category.name %></a> /<% } %>
+  <span class="text-muted"><%= book.title %></span>
+</nav>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <% if (gallery.length) { %>
+      <img id="mainImage" src="<%= gallery[0] %>" class="img-fluid rounded border mb-2" alt="<%= book.title %>">
+      <% if (gallery.length > 1) { %>
+        <div class="d-flex gap-2 flex-wrap">
+          <% gallery.forEach(function (src, i) { %>
+            <img src="<%= src %>" class="thumb rounded <%= i === 0 ? 'active' : '' %>" alt="Ảnh <%= i + 1 %>">
+          <% }) %>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="book-cover placeholder rounded border">Không có ảnh</div>
+    <% } %>
+  </div>
+
+  <div class="col-md-7">
+    <h2><%= book.title %></h2>
+    <div class="text-muted mb-1">
+      Tác giả: <%= book.author %>
+      <% if (book.publisher) { %> · Nhà xuất bản: <%= book.publisher.name %><% } %>
+    </div>
+    <div class="mb-2">
+      <% if (book.ratingCount > 0) { %>
+        ★ <%= book.ratingAvg.toFixed(1) %> (<%= book.ratingCount %> đánh giá)
+      <% } else { %>
+        <span class="text-muted">Chưa có đánh giá</span>
+      <% } %>
+      <span class="text-muted small ms-2">Lượt xem: <%= book.views %></span>
+    </div>
+
+    <div class="mb-3">
+      <span class="price fs-3"><%= vnd(book.price) %></span>
+      <% if (onSale) { %>
+        <span class="old-price ms-2"><%= vnd(book.oldPrice) %></span>
+        <span class="badge bg-danger ms-1">-<%= percent %>%</span>
+      <% } %>
+    </div>
+
+    <ul class="small text-muted mb-3">
+      <li>Giao hàng toàn quốc, thời gian dự kiến 2-5 ngày.</li>
+      <li>Nhập mã giảm giá (nếu có) ở bước thanh toán.</li>
+    </ul>
+
+    <% if (inStock) { %>
+      <p class="text-success mb-2">Còn hàng (<%= book.stock %> sản phẩm)</p>
+      <div class="input-group mb-1" style="max-width: 160px;">
+        <button class="btn btn-outline-secondary" type="button" id="qtyMinus">−</button>
+        <input type="number" id="qty" class="form-control text-center" value="1" min="1" max="<%= book.stock %>">
+        <button class="btn btn-outline-secondary" type="button" id="qtyPlus">+</button>
+      </div>
+      <div id="qtyHint" class="text-danger small mb-3" style="min-height: 1.2em;"></div>
+    <% } else { %>
+      <p class="text-danger fw-semibold mb-3">Hết hàng</p>
+    <% } %>
+
+    <div class="d-flex gap-2 mb-4">
+      <button id="addToCartBtn" class="btn btn-outline-primary" data-book-id="<%= book._id %>" <%= inStock ? '' : 'disabled' %>>Thêm vào giỏ</button>
+      <button id="buyNowBtn" class="btn btn-primary" data-book-id="<%= book._id %>" <%= inStock ? '' : 'disabled' %>>Mua ngay</button>
+    </div>
+
+    <h5>Thông tin chi tiết</h5>
+    <table class="table table-sm">
+      <tbody>
+        <tr><th style="width: 40%;">Tác giả</th><td><%= book.author %></td></tr>
+        <% if (book.publisher) { %><tr><th>Nhà xuất bản</th><td><%= book.publisher.name %></td></tr><% } %>
+        <% if (book.publishYear) { %><tr><th>Năm xuất bản</th><td><%= book.publishYear %></td></tr><% } %>
+        <% if (book.isbn) { %><tr><th>ISBN</th><td><%= book.isbn %></td></tr><% } %>
+        <% if (book.pages) { %><tr><th>Số trang</th><td><%= book.pages %></td></tr><% } %>
+        <tr><th>Ngôn ngữ</th><td><%= langLabel[book.language] %></td></tr>
+        <% if (book.category) { %><tr><th>Danh mục</th><td><%= book.category.name %></td></tr><% } %>
+      </tbody>
+    </table>
+
+    <% if (book.description) { %>
+      <h5>Mô tả</h5>
+      <p style="white-space: pre-line;"><%= book.description %></p>
+    <% } %>
+  </div>
+</div>
+
+<hr class="my-5">
+<%- include('../partials/book-section', { heading: 'Sản phẩm liên quan', books: related }) %>
+
+<script src="/js/book-detail.js" defer></script>

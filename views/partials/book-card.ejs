@@ -1,0 +1,25 @@
+<%
+  const onSale = book.oldPrice && book.oldPrice > book.price;
+  const percent = onSale ? Math.round((1 - book.price / book.oldPrice) * 100) : 0;
+%>
+<div class="col">
+  <div class="card h-100 book-card">
+    <a href="/sach/<%= book.slug %>" class="position-relative text-decoration-none">
+      <% if (book.coverImage) { %>
+        <img src="<%= book.coverImage %>" class="book-cover card-img-top" alt="<%= book.title %>">
+      <% } else { %>
+        <div class="book-cover placeholder card-img-top">Không có ảnh</div>
+      <% } %>
+      <% if (onSale) { %><span class="badge bg-danger position-absolute top-0 start-0 m-2">-<%= percent %>%</span><% } %>
+      <% if (book.stock <= 0) { %><span class="badge bg-secondary position-absolute top-0 end-0 m-2">Hết hàng</span><% } %>
+    </a>
+    <div class="card-body">
+      <a href="/sach/<%= book.slug %>" class="book-title text-dark text-decoration-none"><%= book.title %></a>
+      <div class="text-muted small"><%= book.author %> · <%= langLabel[book.language] %></div>
+      <div class="mt-2">
+        <span class="price"><%= vnd(book.price) %></span>
+        <% if (onSale) { %><span class="old-price ms-1"><%= vnd(book.oldPrice) %></span><% } %>
+      </div>
+    </div>
+  </div>
+</div>

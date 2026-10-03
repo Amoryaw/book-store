@@ -1,0 +1,10 @@
+/*
+1/ cai dat node js bang lenh: npm init -y
+2/cac dat cac thu vien can thiet khac de phuc vu cho project: npm i express mongoose ejs express-ejs-layouts dotenv bcryptjs jsonwebtoken cookie-parser multer nodemailer stripe axios     
+3/npm i -D nodemon
+Nodemon chỉ là công cụ tiện lợi khi code, không bắt buộc. Bình thường mỗi lần sửa code bạn phải tắt server (Ctrl+C) rồi chạy lại node server.js. Nodemon theo dõi file và tự khởi động lại server mỗi khi bạn lưu. Với project có nhiều file như thế này, bạn sẽ sửa code liên tục nên nó tiết kiệm khá nhiều thời gian.
+
+
+
+
+*/

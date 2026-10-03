@@ -1,0 +1,23 @@
+<h3 class="mb-3">Đơn hàng của tôi</h3>
+
+<% if (!orders.length) { %>
+  <div class="text-center py-5">
+    <p class="lead">Bạn chưa có đơn hàng nào.</p>
+    <a href="/" class="btn btn-primary">Mua sắm ngay</a>
+  </div>
+<% } else { %>
+  <table class="table align-middle">
+    <thead><tr><th>Mã đơn</th><th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+      <% orders.forEach(function (o) { %>
+        <tr>
+          <td class="fw-medium"><%= o.orderCode %></td>
+          <td><%= o.createdAt.toLocaleString('vi-VN') %></td>
+          <td class="price"><%= vnd(o.totalAmount) %></td>
+          <td><span class="badge bg-<%= orderStatusColor[o.status] %>"><%= orderStatusLabel[o.status] %></span></td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/orders/<%= o.orderCode %>">Chi tiết</a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>

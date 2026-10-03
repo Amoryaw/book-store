@@ -1,0 +1,50 @@
+.book-cover {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    background: #f1f1f1;
+}
+
+.book-cover.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: .9rem;
+}
+
+.book-card:hover {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .15);
+}
+
+.book-title {
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+}
+
+.price {
+    color: #d70018;
+    font-weight: 600;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #888;
+    font-size: .9rem;
+}
+
+.thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.thumb.active {
+    border-color: #0d6efd;
+}

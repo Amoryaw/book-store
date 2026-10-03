@@ -1,0 +1,71 @@
+<h3 class="mb-3">Thanh toán</h3>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form id="checkoutForm" novalidate>
+      <h5>Thông tin nhận hàng</h5>
+      <div class="mb-3">
+        <label class="form-label" for="receiverName">Họ và tên</label>
+        <input class="form-control" id="receiverName" value="<%= currentUser.fullName || '' %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="receiverPhone">Số điện thoại</label>
+        <input class="form-control" id="receiverPhone" value="<%= currentUser.phone || '' %>" placeholder="0901234567" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="receiverAddress">Địa chỉ nhận hàng</label>
+        <textarea class="form-control" id="receiverAddress" rows="2" required><%= currentUser.address || '' %></textarea>
+      </div>
+
+      <h5 class="mt-4">Phương thức thanh toán</h5>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="payment" id="payCod" value="cod" checked>
+        <label class="form-check-label" for="payCod">Thanh toán khi nhận hàng (COD)</label>
+      </div>
+      <div class="form-check mb-1">
+        <input class="form-check-input" type="radio" name="payment" id="payStripe" value="stripe" <%= stripeEnabled ? '' : 'disabled' %>>
+        <label class="form-check-label <%= stripeEnabled ? '' : 'text-muted' %>" for="payStripe">Thẻ quốc tế (Visa, Mastercard) qua Stripe</label>
+      </div>
+      <div class="small text-muted mb-3">
+        <% if (stripeEnabled) { %>
+          Bạn sẽ được chuyển sang trang thanh toán an toàn của Stripe. Đơn được giữ khoảng 30 phút để bạn hoàn tất thanh toán.
+        <% } else { %>
+          Thanh toán bằng thẻ chưa được bật (thiếu STRIPE_SECRET_KEY trong .env).
+        <% } %>
+      </div>
+
+      <div id="orderError" class="text-danger mb-2" style="min-height: 1.4em;"></div>
+      <button type="submit" class="btn btn-primary" id="placeOrderBtn">Đặt hàng</button>
+      <a href="/cart" class="btn btn-link">Quay lại giỏ hàng</a>
+    </form>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Đơn hàng của bạn</h5>
+        <% items.forEach(function (it) { %>
+          <div class="d-flex justify-content-between small mb-1">
+            <span><%= it.book.title %> × <%= it.quantity %></span>
+            <span><%= vnd(it.lineTotal) %></span>
+          </div>
+        <% }) %>
+        <hr>
+
+        <div class="input-group input-group-sm mb-1">
+          <input class="form-control" id="couponCode" placeholder="Mã giảm giá">
+          <button class="btn btn-outline-secondary" type="button" id="applyCouponBtn">Áp dụng</button>
+        </div>
+        <div id="couponMsg" class="small mb-2" style="min-height: 1.2em;"></div>
+
+        <div class="d-flex justify-content-between"><span>Tạm tính</span><span id="subtotal" data-value="<%= subtotal %>"><%= vnd(subtotal) %></span></div>
+        <div class="d-flex justify-content-between"><span>Phí vận chuyển</span><span id="shipping" data-value="<%= shippingFee %>"><%= shippingFee ? vnd(shippingFee) : 'Miễn phí' %></span></div>
+        <div class="d-flex justify-content-between text-success"><span>Giảm giá</span><span id="discount">- 0 ₫</span></div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5"><span>Tổng cộng</span><span class="price" id="total"><%= vnd(subtotal + shippingFee) %></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/checkout.js" defer></script>

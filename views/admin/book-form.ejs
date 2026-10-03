@@ -1,0 +1,136 @@
+<% const b = book || {}; %>
+<a href="/admin/books" class="text-decoration-none">&larr; Danh sách sách</a>
+<h3 class="my-3"><%= book ? 'Sửa sách' : 'Thêm sách' %></h3>
+
+<form id="bookForm" class="bg-white p-4 rounded" data-id="<%= book ? book._id : '' %>" style="max-width: 900px">
+  <div id="formError" class="alert alert-danger d-none"></div>
+
+  <h5 class="mb-3">Thông tin chung</h5>
+  <div class="row g-3 mb-3">
+    <div class="col-md-8">
+      <label class="form-label">Tên sách *</label>
+      <input name="title" class="form-control" value="<%= b.title || '' %>" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Tác giả *</label>
+      <input name="author" class="form-control" value="<%= b.author || '' %>" required>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Giá bán (₫) *</label>
+      <input name="price" type="number" min="0" step="any" class="form-control" value="<%= b.price != null ? b.price : '' %>" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Giá cũ (₫) <small class="text-muted">để hiện khuyến mãi</small></label>
+      <input name="oldPrice" type="number" min="0" step="any" class="form-control" value="<%= b.oldPrice != null ? b.oldPrice : '' %>">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Tồn kho *</label>
+      <input name="stock" type="number" min="0" step="1" class="form-control" value="<%= b.stock != null ? b.stock : 0 %>" required>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Danh mục *</label>
+      <select name="category" class="form-select" required>
+        <option value="">-- Chọn danh mục --</option>
+        <% categories.forEach(function (c) { %>
+          <option value="<%= c._id %>" <%= b.category && String(b.category) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Nhà xuất bản</label>
+      <select name="publisher" class="form-select">
+        <option value="">-- Không chọn --</option>
+        <% publishers.forEach(function (p) { %>
+          <option value="<%= p._id %>" <%= b.publisher && String(b.publisher) === String(p._id) ? 'selected' : '' %>><%= p.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Trạng thái *</label>
+      <select name="status" class="form-select" required>
+        <option value="published" <%= b.status === 'published' ? 'selected' : '' %>>Đang bán (hiện cho khách)</option>
+        <option value="draft" <%= (!book || b.status === 'draft') ? 'selected' : '' %>>Nháp (chưa đăng)</option>
+        <option value="hidden" <%= b.status === 'hidden' ? 'selected' : '' %>>Ẩn khỏi cửa hàng</option>
+      </select>
+    </div>
+
+    <div class="col-12">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="isFeatured" name="isFeatured" <%= b.isFeatured ? 'checked' : '' %>>
+        <label class="form-check-label" for="isFeatured">Sách nổi bật (hiện ở mục nổi bật trang chủ)</label>
+      </div>
+    </div>
+  </div>
+
+  <h5 class="mb-3 mt-4">Thông tin sách</h5>
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <label class="form-label">Ngôn ngữ</label>
+      <select name="language" class="form-select">
+        <option value="vi" <%= b.language !== 'en' ? 'selected' : '' %>>Tiếng Việt</option>
+        <option value="en" <%= b.language === 'en' ? 'selected' : '' %>>Tiếng Anh</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Năm xuất bản</label>
+      <input name="publishYear" type="number" min="1000" max="2100" class="form-control" value="<%= b.publishYear || '' %>">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Số trang</label>
+      <input name="pages" type="number" min="1" class="form-control" value="<%= b.pages || '' %>">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">ISBN</label>
+      <input name="isbn" class="form-control" value="<%= b.isbn || '' %>">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Mô tả ngắn <small class="text-muted">(tối đa 1000 ký tự)</small></label>
+      <textarea name="shortDescription" rows="2" maxlength="1000" class="form-control"><%= b.shortDescription || '' %></textarea>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Mô tả chi tiết</label>
+      <textarea name="description" rows="6" class="form-control"><%= b.description || '' %></textarea>
+    </div>
+  </div>
+
+  <h5 class="mb-3 mt-4">Hình ảnh <small class="text-muted fs-6">(mỗi ảnh tối đa 2MB)</small></h5>
+  <div class="mb-3">
+    <label class="form-label">Ảnh bìa</label>
+    <% if (b.coverImage) { %>
+      <div class="mb-2">
+        <img src="<%= b.coverImage %>" alt="" style="max-height:160px" class="rounded border">
+        <div class="small text-muted">Chọn ảnh mới nếu muốn thay ảnh bìa.</div>
+      </div>
+    <% } %>
+    <input type="file" name="coverImage" accept="image/*" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Ảnh phụ <small class="text-muted">(chọn tối đa 5 ảnh mỗi lần, tổng tối đa 10 ảnh)</small></label>
+    <% if (b.images && b.images.length) { %>
+      <div class="d-flex flex-wrap gap-3 mb-2">
+        <% b.images.forEach(function (img) { %>
+          <label class="text-center small" style="cursor:pointer">
+            <img src="<%= img %>" alt="" style="width:90px;height:120px;object-fit:cover" class="rounded border d-block mb-1">
+            <input type="checkbox" name="removeImages" value="<%= img %>"> Xóa ảnh này
+          </label>
+        <% }) %>
+      </div>
+    <% } %>
+    <input type="file" name="images" accept="image/*" multiple class="form-control" data-existing="<%= b.images ? b.images.length : 0 %>">
+  </div>
+
+  <% if (book) { %>
+    <div class="alert alert-light border small">
+      Số liệu hệ thống tự cập nhật (không sửa tay):
+      đã bán <strong><%= b.sold %></strong> &middot; lượt xem <strong><%= b.views %></strong> &middot;
+      đánh giá <strong><%= b.ratingAvg %></strong>/5 (<%= b.ratingCount %> lượt)
+    </div>
+  <% } %>
+
+  <button class="btn btn-primary" type="submit" id="saveBtn">Lưu</button>
+  <a href="/admin/books" class="btn btn-outline-secondary">Hủy</a>
+</form>
+<script src="/js/admin-book-form.js" defer></script>
